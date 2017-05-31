@@ -8,12 +8,12 @@ public class MyApplication extends Application{
 	
 	@Override
 	protected void attachBaseContext(Context base) {
+		ServiceManagerWraper.hookPMS(base);
 		super.attachBaseContext(base);
 	}
 
 	@Override
 	public void onCreate() {
-		ServiceManagerWraper.hookPMS(this, "308201fb30820164a003020102020450", 1338303158);
 		super.onCreate();
 	}
 

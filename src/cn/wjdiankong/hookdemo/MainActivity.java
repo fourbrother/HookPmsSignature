@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
             Log.i("jw", "len:"+packageInfo.signatures.length);
             if (packageInfo.signatures != null) {
-            	Log.i("jw", "sig:"+packageInfo.signatures[0].hashCode());
+            	Log.i("jw", "sig:"+packageInfo.signatures[0].toCharsString());
             }
         } catch (Exception e2) {
         } 

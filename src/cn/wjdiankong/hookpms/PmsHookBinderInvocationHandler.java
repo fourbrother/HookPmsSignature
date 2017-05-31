@@ -1,6 +1,5 @@
 package cn.wjdiankong.hookpms;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -18,13 +17,13 @@ public class PmsHookBinderInvocationHandler implements InvocationHandler{
     
     //应用正确的签名信息
     private String SIGN;
-    private int hashCode = 0;
+    private String appPkgName = "";
 
-    public PmsHookBinderInvocationHandler(Object base, String sign, int hashCode) {
+    public PmsHookBinderInvocationHandler(Object base, String sign, String appPkgName, int hashCode) {
         try {
             this.base = base;
             this.SIGN = sign;
-            this.hashCode = hashCode;
+            this.appPkgName = appPkgName;
         } catch (Exception e) {
             Log.d("jw", "error:"+Log.getStackTraceString(e));
         }
@@ -32,23 +31,12 @@ public class PmsHookBinderInvocationHandler implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    	Log.i("jw", method.getName());
         if("getPackageInfo".equals(method.getName())){
+        	String pkgName = (String)args[0];
             Integer flag = (Integer)args[1];
-            if(flag == PackageManager.GET_SIGNATURES){
+            if(flag == PackageManager.GET_SIGNATURES && appPkgName.equals(pkgName)){
             	Signature sign = new Signature(SIGN);
-            	if(hashCode != 0){
-            		try{
-                		Class<?> clazz = sign.getClass();
-                		Field mHaveHashCodeF = clazz.getDeclaredField("mHaveHashCode");
-                		mHaveHashCodeF.setAccessible(true);
-                		mHaveHashCodeF.set(sign, true);
-                		Field mHashCodeF = clazz.getDeclaredField("mHashCode");
-                		mHashCodeF.setAccessible(true);
-                		mHashCodeF.set(sign, hashCode);
-                	}catch(Exception e){
-                		Log.i("jw", "hook error:"+Log.getStackTraceString(e));
-                	}
-            	}
             	PackageInfo info = (PackageInfo) method.invoke(base, args);
             	info.signatures[0] = sign;
             	return info;
